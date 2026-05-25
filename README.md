@@ -21,6 +21,7 @@ C: Editing a card changes its [hash] and creates a new review identity.
 
 - `@mdsrs/core`: dependency-free parser, card model, deck tree helpers, hashing, and deterministic scheduling.
 - `@mdsrs/fs`: Node filesystem loader for Markdown card collections.
+- `@mdsrs/markdown`: safe Markdown, math, and media rendering for card faces.
 
 ## Design principles
 
@@ -38,4 +39,14 @@ const collection = await loadCollection('./cards');
 
 console.log(collection.cards);
 console.log(collection.deckTree);
+```
+
+## Rendering Card Faces
+
+```ts
+import { renderCard } from '@mdsrs/markdown';
+
+const rendered = renderCard(collection.cards[0], {
+	resolveAsset: (url) => `/assets/${url}`
+});
 ```
