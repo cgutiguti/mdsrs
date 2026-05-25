@@ -5,7 +5,7 @@
 	"type": "module",
 	"packageManager": "pnpm@10.23.0",
 	"scripts": {
-		"build": "pnpm -r build",
+		"build": "pnpm --filter @mdsrs/core build && pnpm --filter @mdsrs/fs build",
 		"test": "pnpm -r test",
 		"typecheck": "pnpm -r typecheck"
 	},

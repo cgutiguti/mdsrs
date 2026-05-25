@@ -20,6 +20,7 @@ C: Editing a card changes its [hash] and creates a new review identity.
 ## Packages
 
 - `@mdsrs/core`: dependency-free parser, card model, deck tree helpers, hashing, and deterministic scheduling.
+- `@mdsrs/fs`: Node filesystem loader for Markdown card collections.
 
 ## Design principles
 
@@ -27,3 +28,14 @@ C: Editing a card changes its [hash] and creates a new review identity.
 - Review state is adapter-owned data keyed by card hashes.
 - The core package does no database IO and owns no UI framework.
 - Given the same card content, prior performance, grade, and review time, scheduling is deterministic.
+
+## Loading a Folder
+
+```ts
+import { loadCollection } from '@mdsrs/fs';
+
+const collection = await loadCollection('./cards');
+
+console.log(collection.cards);
+console.log(collection.deckTree);
+```
