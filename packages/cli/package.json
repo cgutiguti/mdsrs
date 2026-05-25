@@ -1,0 +1,29 @@
+{
+	"name": "@mdsrs/cli",
+	"version": "0.0.0",
+	"type": "module",
+	"sideEffects": false,
+	"bin": {
+		"mdsrs": "./dist/index.js"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": ["dist"],
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"test": "vitest run",
+		"typecheck": "tsc -p tsconfig.json --noEmit"
+	},
+	"dependencies": {
+		"@mdsrs/fs": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"typescript": "^6.0.3",
+		"vitest": "^4.0.0"
+	}
+}
