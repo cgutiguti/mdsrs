@@ -4,7 +4,7 @@ const titleize = (value: string) =>
 	value
 		.split(/[-_\s]+/)
 		.filter(Boolean)
-		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.map((part) => part.slice(0, 1).toUpperCase() + part.slice(1))
 		.join(' ');
 
 const ensureNode = (nodes: Map<string, DeckTreeNode>, path: string, fallbackName: string) => {
@@ -33,7 +33,7 @@ export const buildDeckTree = (cards: Card[]): DeckTreeNode[] => {
 
 		for (let index = 0; index < parts.length; index++) {
 			const path = parts.slice(0, index + 1).join('/');
-			ensureNode(nodes, path, index === parts.length - 1 ? card.displayName : titleize(parts[index]));
+			ensureNode(nodes, path, index === parts.length - 1 ? card.displayName : titleize(parts[index] ?? ''));
 		}
 
 		const node = ensureNode(nodes, nodePath, card.displayName);
@@ -65,4 +65,3 @@ export const buildDeckTree = (cards: Card[]): DeckTreeNode[] => {
 
 	return sortNodes(nodes.get('')?.children ?? []);
 };
-
