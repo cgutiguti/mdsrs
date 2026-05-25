@@ -5,7 +5,7 @@
 	"type": "module",
 	"packageManager": "pnpm@10.23.0",
 	"scripts": {
-		"build": "pnpm --filter @mdsrs/core build && pnpm --filter @mdsrs/fs build && pnpm --filter @mdsrs/markdown build && pnpm --filter @mdsrs/cli build",
+		"build": "pnpm --filter @mdsrs/core build && pnpm --filter @mdsrs/fs build && pnpm --filter @mdsrs/markdown build && pnpm --filter @mdsrs/cli build && pnpm --filter @mdsrs/example-sveltekit build",
 		"test": "pnpm -r test",
 		"typecheck": "pnpm -r typecheck"
 	},

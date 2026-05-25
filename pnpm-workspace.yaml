@@ -1,4 +1,5 @@
 packages:
   - packages/*
+  - examples/*
 
 minimumReleaseAge: 10080

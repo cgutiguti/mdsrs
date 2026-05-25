@@ -1,0 +1,132 @@
+:root {
+	color: #171717;
+	background: #fbfbfa;
+	font-family:
+		ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	line-height: 1.5;
+}
+
+body {
+	margin: 0;
+}
+
+a {
+	color: inherit;
+	text-decoration-color: #9ca3af;
+	text-underline-offset: 0.2em;
+}
+
+button {
+	border: 1px solid #a3a3a3;
+	background: #ffffff;
+	color: #171717;
+	cursor: pointer;
+	font: inherit;
+	padding: 0.55rem 0.8rem;
+}
+
+button:hover {
+	background: #f5f5f4;
+}
+
+main {
+	margin: 0 auto;
+	max-width: 56rem;
+	padding: 2rem 1rem 4rem;
+}
+
+.site-header {
+	border-bottom: 1px solid #d4d4d4;
+}
+
+.site-header-inner {
+	align-items: center;
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+	margin: 0 auto;
+	max-width: 56rem;
+	padding: 1rem;
+}
+
+.site-title {
+	font-size: 1rem;
+	font-weight: 700;
+	margin: 0;
+}
+
+.nav {
+	display: flex;
+	gap: 0.8rem;
+}
+
+.stats {
+	display: grid;
+	gap: 0.75rem;
+	grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+	margin: 1.5rem 0;
+}
+
+.stat {
+	border-top: 1px solid #d4d4d4;
+	padding-top: 0.5rem;
+}
+
+.stat strong {
+	display: block;
+	font-size: 1.35rem;
+	line-height: 1.1;
+}
+
+.muted {
+	color: #666666;
+}
+
+.card-face {
+	background: #ffffff;
+	border: 1px solid #d4d4d4;
+	margin: 1rem 0;
+	padding: 1rem;
+}
+
+.card-face h2,
+.card-face h3 {
+	margin-top: 0;
+}
+
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}
+
+.table-wrap {
+	overflow-x: auto;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+th,
+td {
+	border-bottom: 1px solid #d4d4d4;
+	padding: 0.6rem 0.4rem;
+	text-align: left;
+	vertical-align: top;
+}
+
+th {
+	font-size: 0.85rem;
+}
+
+code {
+	background: #eeeeec;
+	padding: 0.1rem 0.25rem;
+}
+
+.mdsrs-media {
+	max-width: 100%;
+}
