@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS "mdsrs_reviews" (
 	"due_date" date NOT NULL,
 	CONSTRAINT "mdsrs_reviews_review_card_hash_mdsrs_cards_card_hash_fk"
 		FOREIGN KEY ("review_card_hash")
-		REFERENCES "public"."mdsrs_cards"("card_hash")
+		REFERENCES "mdsrs_cards"("card_hash")
 		ON DELETE cascade
 		ON UPDATE no action
 );

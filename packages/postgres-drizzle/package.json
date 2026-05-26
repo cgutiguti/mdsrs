@@ -17,6 +17,7 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
 		"test": "vitest run",
+		"test:integration": "vitest run src/postgres.integration.test.ts",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"dependencies": {
@@ -26,6 +27,8 @@
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.0",
+		"@types/pg": "^8.20.0",
+		"pg": "^8.21.0",
 		"typescript": "^6.0.3",
 		"vitest": "^4.0.0"
 	}
