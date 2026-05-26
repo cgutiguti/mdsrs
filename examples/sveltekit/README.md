@@ -3,7 +3,7 @@
 A minimal SvelteKit app that demonstrates:
 
 - loading Markdown cards from `cards/` with `@mdsrs/fs`
-- building an in-memory due queue with `@mdsrs/core`
+- storing in-memory review progress with `@mdsrs/store`
 - rendering card faces with `@mdsrs/markdown`
 - browsing parsed cards and deck counts
 
@@ -13,4 +13,5 @@ Run it with:
 pnpm --filter @mdsrs/example-sveltekit dev
 ```
 
-Review progress is stored in memory for the running server process.
+Review progress is stored in memory for the running server process and resets
+when the server restarts.

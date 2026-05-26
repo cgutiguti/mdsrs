@@ -1,12 +1,20 @@
 import { fail } from '@sveltejs/kit';
 import { getCollection, renderExampleCard } from '$lib/server/collection';
-import { getPerformance, getReviewQueue, grades, recordReview, resetReviews } from '$lib/server/reviews';
+import {
+	getPerformance,
+	getReviewQueue,
+	grades,
+	recordReview,
+	resetReviews,
+	syncStore
+} from '$lib/server/reviews';
 import type { Actions, PageServerLoad } from './$types';
 import type { Grade } from '@mdsrs/core';
 
 export const load: PageServerLoad = async () => {
 	const collection = await getCollection();
-	const queue = getReviewQueue(collection.cards);
+	await syncStore(collection.cards);
+	const queue = await getReviewQueue(collection.cards);
 	const current = queue[0]?.card ?? null;
 
 	return {
@@ -21,7 +29,7 @@ export const load: PageServerLoad = async () => {
 					filePath: current.filePath,
 					frontMarkdown: current.frontMarkdown,
 					backMarkdown: current.backMarkdown,
-					performance: getPerformance(current.hash)
+					performance: await getPerformance(current.hash)
 				})
 			: null
 	};
@@ -30,6 +38,7 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
 	review: async ({ request }) => {
 		const collection = await getCollection();
+		await syncStore(collection.cards);
 		const cardHashes = new Set(collection.cards.map((card) => card.hash));
 		const data = await request.formData();
 		const cardHash = data.get('cardHash');
@@ -43,7 +52,7 @@ export const actions: Actions = {
 			return fail(400, { message: 'Invalid review grade.' });
 		}
 
-		recordReview(cardHash, grade as Grade);
+		await recordReview(cardHash, grade as Grade);
 		return { reviewed: true };
 	},
 	reset: async () => {

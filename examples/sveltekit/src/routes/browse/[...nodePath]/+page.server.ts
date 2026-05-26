@@ -1,11 +1,12 @@
 import { error } from '@sveltejs/kit';
 import { getCollection, renderExampleCard } from '$lib/server/collection';
 import { findDeckNode, getDirectCards, getPathSegments } from '$lib/server/browse';
-import { getPerformance } from '$lib/server/reviews';
+import { getPerformance, syncStore } from '$lib/server/reviews';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const collection = await getCollection();
+	await syncStore(collection.cards);
 	const nodePath = params.nodePath ?? '';
 	const rootView = nodePath === '';
 	const node = rootView ? null : findDeckNode(collection.deckTree, nodePath);
@@ -22,15 +23,17 @@ export const load: PageServerLoad = async ({ params }) => {
 		title: rootView ? 'Browse' : (node?.name ?? 'Browse'),
 		breadcrumbs: getPathSegments(nodePath),
 		childDecks,
-		cards: directCards.map((card) =>
-			renderExampleCard({
+		cards: await Promise.all(
+			directCards.map(async (card) =>
+				renderExampleCard({
 				hash: card.hash,
 				deckName: card.deckName,
 				filePath: card.filePath,
 				frontMarkdown: card.frontMarkdown,
 				backMarkdown: card.backMarkdown,
-				performance: getPerformance(card.hash)
-			})
+					performance: await getPerformance(card.hash)
+				})
+			)
 		)
 	};
 };

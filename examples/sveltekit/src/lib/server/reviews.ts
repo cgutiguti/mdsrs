@@ -1,33 +1,25 @@
-import { buildReviewQueue, scheduleReview, type Card, type CardPerformance, type Grade } from '@mdsrs/core';
+import type { Card, Grade } from '@mdsrs/core';
+import { createMemoryStore } from '@mdsrs/store';
 
-const performances = new Map<string, CardPerformance>();
+let store = createMemoryStore();
 
 export const grades = new Set<Grade>(['forgot', 'hard', 'good', 'easy']);
 
-export const getPerformance = (cardHash: string) => performances.get(cardHash) ?? null;
+export const syncStore = async (cards: Card[]) => {
+	await store.syncCards(cards);
+	return store;
+};
 
-export const getPerformances = () => performances;
+export const getPerformance = async (cardHash: string) =>
+	(await store.getPerformances([cardHash])).get(cardHash) ?? null;
 
 export const getReviewQueue = (cards: Card[]) =>
-	buildReviewQueue(cards, performances, {
+	store.getDueCards(cards, {
 		burySiblings: true
 	});
 
-export const recordReview = (cardHash: string, grade: Grade) => {
-	const result = scheduleReview(performances.get(cardHash), grade);
-	performances.set(cardHash, {
-		lastReviewedAt: result.lastReviewedAt,
-		stability: result.stability,
-		difficulty: result.difficulty,
-		intervalRaw: result.intervalRaw,
-		intervalDays: result.intervalDays,
-		dueDate: result.dueDate,
-		reviewCount: result.reviewCount
-	});
-
-	return result;
-};
+export const recordReview = (cardHash: string, grade: Grade) => store.reviewCard(cardHash, grade);
 
 export const resetReviews = () => {
-	performances.clear();
+	store = createMemoryStore();
 };

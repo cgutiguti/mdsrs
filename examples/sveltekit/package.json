@@ -13,6 +13,7 @@
 		"@mdsrs/core": "workspace:*",
 		"@mdsrs/fs": "workspace:*",
 		"@mdsrs/markdown": "workspace:*",
+		"@mdsrs/store": "workspace:*",
 		"@sveltejs/adapter-auto": "^7.0.0",
 		"katex": "^0.16.47"
 	},
