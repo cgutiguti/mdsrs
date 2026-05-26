@@ -145,6 +145,22 @@ importers:
         specifier: ^4.0.0
         version: 4.1.7(@types/node@24.12.4)(vite@8.0.14(@types/node@24.12.4))
 
+  packages/store:
+    dependencies:
+      '@mdsrs/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.12.4
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.7(@types/node@24.12.4)(vite@8.0.14(@types/node@24.12.4))
+
 packages:
 
   '@emnapi/core@1.10.0':

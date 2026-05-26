@@ -1,0 +1,26 @@
+{
+	"name": "@mdsrs/store",
+	"version": "0.0.0",
+	"type": "module",
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": ["dist"],
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"test": "vitest run",
+		"typecheck": "tsc -p tsconfig.json --noEmit"
+	},
+	"dependencies": {
+		"@mdsrs/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"typescript": "^6.0.3",
+		"vitest": "^4.0.0"
+	}
+}

@@ -20,6 +20,7 @@ C: Editing a card changes its [hash] and creates a new review identity.
 ## Packages
 
 - `@mdsrs/core`: dependency-free parser, card model, deck tree helpers, hashing, and deterministic scheduling.
+- `@mdsrs/store`: persistence interface plus an in-memory implementation.
 - `@mdsrs/fs`: Node filesystem loader for Markdown card collections.
 - `@mdsrs/markdown`: safe Markdown, math, and media rendering for card faces.
 - `@mdsrs/cli`: command-line tools for checking and exporting card collections.
