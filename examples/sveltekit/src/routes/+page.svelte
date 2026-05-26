@@ -1,5 +1,7 @@
 <script lang="ts">
 	let { data, form } = $props();
+	let revealed = $state(false);
+	let currentHash = $state<string | null>(null);
 
 	const gradeLabels = [
 		['forgot', 'Forgot'],
@@ -7,6 +9,14 @@
 		['good', 'Good'],
 		['easy', 'Easy']
 	] as const;
+
+	$effect(() => {
+		const nextHash = data.currentCard?.hash ?? null;
+		if (nextHash !== currentHash) {
+			currentHash = nextHash;
+			revealed = false;
+		}
+	});
 </script>
 
 <main>
@@ -45,17 +55,23 @@
 			{@html data.currentCard.frontHtml}
 		</section>
 
-		<section class="card-face" aria-label="Back">
-			<h2>Back</h2>
-			{@html data.currentCard.backHtml}
-		</section>
+		{#if revealed}
+			<section class="card-face" aria-label="Back">
+				<h2>Back</h2>
+				{@html data.currentCard.backHtml}
+			</section>
 
-		<form method="POST" action="?/review" class="actions">
-			<input type="hidden" name="cardHash" value={data.currentCard.hash} />
-			{#each gradeLabels as [grade, label]}
-				<button type="submit" name="grade" value={grade}>{label}</button>
-			{/each}
-		</form>
+			<form method="POST" action="?/review" class="actions">
+				<input type="hidden" name="cardHash" value={data.currentCard.hash} />
+				{#each gradeLabels as [grade, label]}
+					<button type="submit" name="grade" value={grade}>{label}</button>
+				{/each}
+			</form>
+		{:else}
+			<div class="actions">
+				<button type="button" onclick={() => (revealed = true)}>Reveal answer</button>
+			</div>
+		{/if}
 	{:else}
 		<section class="card-face">
 			<h2>Queue empty</h2>

@@ -78,6 +78,17 @@ describe('parseDeck', () => {
 			})
 		).toThrow(MdsrsParseError);
 	});
+
+	it('does not inject markdown emphasis into cloze answers inside inline math', () => {
+		const [card] = parseDeck({
+			deckName: 'Math',
+			filePath: 'math.md',
+			text: 'C: Euler identity says $e^{i\\pi} + [1] = 0$.'
+		});
+
+		expect(card?.frontMarkdown).toBe('Euler identity says $e^{i\\pi} + [...] = 0$.');
+		expect(card?.backMarkdown).toBe('Euler identity says $e^{i\\pi} + 1 = 0$.');
+	});
 });
 
 describe('buildDeckTree', () => {

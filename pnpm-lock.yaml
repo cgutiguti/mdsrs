@@ -32,6 +32,9 @@ importers:
       '@sveltejs/adapter-auto':
         specifier: ^7.0.0
         version: 7.0.1(@sveltejs/kit@2.61.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.9)(vite@8.0.14(@types/node@24.12.4)))(svelte@5.55.9)(typescript@6.0.3)(vite@8.0.14(@types/node@24.12.4)))
+      katex:
+        specifier: ^0.16.47
+        version: 0.16.47
     devDependencies:
       '@sveltejs/kit':
         specifier: ^2.59.0
