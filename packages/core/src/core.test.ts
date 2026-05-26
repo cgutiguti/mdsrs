@@ -207,19 +207,22 @@ describe('buildCollectionStats', () => {
 					cardHash: firstCloze.hash,
 					active: true,
 					addedAt: '2026-01-09T00:00:00.000Z',
-					dueDate: null
+					dueDate: null,
+					reviewCount: 0
 				},
 				{
 					cardHash: secondCloze.hash,
 					active: true,
 					addedAt: '2026-01-01T00:00:00.000Z',
-					dueDate: '2026-01-09'
+					dueDate: '2026-01-09',
+					reviewCount: 1
 				},
 				{
 					cardHash: basic.hash,
 					active: true,
 					addedAt: '2025-12-01T00:00:00.000Z',
-					dueDate: '2026-01-11'
+					dueDate: '2026-01-11',
+					reviewCount: 0
 				},
 				{
 					cardHash: chapter.hash,
@@ -254,6 +257,7 @@ describe('buildCollectionStats', () => {
 			totalCards: 4,
 			activeCards: 3,
 			dueCards: 2,
+			queuedCards: 1,
 			overdueCards: 1,
 			newCards: 1,
 			cardsAddedLast7Days: 1,
@@ -267,6 +271,7 @@ describe('buildCollectionStats', () => {
 			path: 'example',
 			activeCards: 3,
 			dueCards: 2,
+			queuedCards: 1,
 			overdueCards: 1,
 			newCards: 1,
 			reviewsLast7Days: 1,

@@ -395,11 +395,17 @@ const stats = await getCollectionStats(store, collection.cards, collection.deckT
 console.log(stats.totalCards);
 console.log(stats.activeCards);
 console.log(stats.dueCards);
+console.log(stats.queuedCards);
 console.log(stats.overdueCards);
 console.log(stats.reviewsToday);
 console.log(stats.hitRateLast30Days);
 console.log(stats.decks);
 ```
+
+`dueCards` counts every active card due today or earlier, including related
+cloze siblings. `queuedCards` counts the cards that would actually appear in the
+review queue after the queue policy is applied. By default, that means cloze
+siblings are buried.
 
 Deck stats include the same neutral ingredients at each node:
 
@@ -407,6 +413,7 @@ Deck stats include the same neutral ingredients at each node:
 for (const deck of stats.decks) {
 	console.log(deck.path);
 	console.log(deck.dueCards);
+	console.log(deck.queuedCards);
 	console.log(deck.overdueCards);
 	console.log(deck.reviewsLast7Days);
 }

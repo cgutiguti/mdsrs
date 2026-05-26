@@ -64,6 +64,7 @@ export interface SrsStore {
 	getPerformances(cardHashes: string[]): Promise<Map<string, CardPerformance>>;
 	getDueCards(cards: Card[], options?: BuildReviewQueueOptions): Promise<ReviewQueueItem[]>;
 	reviewCard(cardHash: string, grade: Grade, reviewedAt?: Date): Promise<ReviewResult>;
+	/** Returns reviews oldest-to-newest by reviewedAt, then reviewId. */
 	getReviews(cardHashes?: string[]): Promise<StoredReview[]>;
 	getCardStats(cardHashes: string[]): Promise<Map<string, CardStats>>;
 }
@@ -87,7 +88,8 @@ export const getCollectionStats = async (
 			cardHash: card.cardHash,
 			active: card.active,
 			addedAt: card.addedAt,
-			dueDate: card.performance.dueDate
+			dueDate: card.performance.dueDate,
+			reviewCount: card.performance.reviewCount
 		})),
 		reviews.map((review) => ({
 			cardHash: review.cardHash,
@@ -215,6 +217,7 @@ export const createMemoryStore = (snapshot?: Partial<MemoryStoreSnapshot>): SrsS
 			const wanted = cardHashes ? new Set(cardHashes) : null;
 			return reviews
 				.filter((review) => wanted == null || wanted.has(review.cardHash))
+				.sort(compareReviews)
 				.map(cloneStoredReview);
 		},
 
@@ -296,6 +299,9 @@ const cloneStoredCard = (card: StoredCard): StoredCard => ({
 const cloneStoredReview = (review: StoredReview): StoredReview => ({
 	...review
 });
+
+const compareReviews = (left: StoredReview, right: StoredReview) =>
+	left.reviewedAt.localeCompare(right.reviewedAt) || left.reviewId - right.reviewId;
 
 const countGrade = (reviews: StoredReview[], grade: Grade) =>
 	reviews.filter((review) => review.grade === grade).length;

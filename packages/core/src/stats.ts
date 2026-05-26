@@ -1,11 +1,13 @@
 import { toDateString } from './schedule.js';
-import type { Card, DeckTreeNode, Grade } from './types.js';
+import { buildReviewQueue } from './queue.js';
+import type { Card, CardPerformance, DeckTreeNode, Grade } from './types.js';
 
 export interface CollectionCardState {
 	cardHash: string;
 	active?: boolean;
 	addedAt?: Date | string | null;
 	dueDate: string | null;
+	reviewCount?: number;
 }
 
 export interface CollectionReviewState {
@@ -21,6 +23,7 @@ export interface DeckStats {
 	totalCardCount: number;
 	activeCards: number;
 	dueCards: number;
+	queuedCards: number;
 	overdueCards: number;
 	newCards: number;
 	cardsAddedLast7Days: number;
@@ -33,6 +36,7 @@ export interface CollectionStats {
 	totalCards: number;
 	activeCards: number;
 	dueCards: number;
+	queuedCards: number;
 	overdueCards: number;
 	newCards: number;
 	cardsAddedLast7Days: number;
@@ -81,6 +85,8 @@ export const buildCollectionStats = (
 	const activeCards = cards.filter((card) => isActiveCard(card, cardStateByHash, hasCardStates));
 	const activeCardHashes = new Set(activeCards.map((card) => card.hash));
 	const dueCards = activeCards.filter((card) => isDueCard(card, cardStateByHash, hasCardStates, today));
+	const performances = cardStatePerformances(activeCards, cardStateByHash);
+	const queuedCards = buildReviewQueue(activeCards, performances, { now });
 	const overdueCards = activeCards.filter((card) => isOverdueCard(card, cardStateByHash, today));
 	const newCards = activeCards.filter((card) => isNewCard(card, cardStateByHash, hasCardStates));
 	const cardsAddedLast7Days = activeCards.filter((card) =>
@@ -108,6 +114,7 @@ export const buildCollectionStats = (
 		totalCards: cards.length,
 		activeCards: activeCards.length,
 		dueCards: dueCards.length,
+		queuedCards: queuedCards.length,
 		overdueCards: overdueCards.length,
 		newCards: newCards.length,
 		cardsAddedLast7Days: cardsAddedLast7Days.length,
@@ -166,6 +173,28 @@ const wasAddedSince = (
 	return addedAt ? toDate(addedAt) >= since : false;
 };
 
+const cardStatePerformances = (
+	cards: Card[],
+	cardStateByHash: ReadonlyMap<string, CollectionCardState>
+) =>
+	new Map<string, CardPerformance>(
+		cards.map((card) => {
+			const state = cardStateByHash.get(card.hash);
+			return [
+				card.hash,
+				{
+					lastReviewedAt: null,
+					stability: null,
+					difficulty: null,
+					intervalRaw: null,
+					intervalDays: null,
+					dueDate: state?.dueDate ?? null,
+					reviewCount: state?.reviewCount ?? 0
+				}
+			];
+		})
+	);
+
 const nodeCardsForStats = (cards: Card[], node: DeckTreeNode) =>
 	cards.filter((card) => card.nodePath === node.path || card.nodePath.startsWith(`${node.path}/`));
 
@@ -191,6 +220,7 @@ const buildDeckStats = (
 	return nodes.map((node) => {
 		const nodeCards = nodeCardsForStats(cards, node);
 		const activeCards = nodeCards.filter((card) => isActiveCard(card, cardStateByHash, hasCardStates));
+		const performances = cardStatePerformances(activeCards, cardStateByHash);
 		const nodeReviews = activeCards.flatMap((card) => reviewsByCard.get(card.hash) ?? []);
 		const reviewsLast30Days = nodeReviews.filter((review) => toDate(review.reviewedAt) >= thirtyDaysAgo);
 
@@ -202,6 +232,7 @@ const buildDeckStats = (
 			activeCards: activeCards.length,
 			dueCards: activeCards.filter((card) => isDueCard(card, cardStateByHash, hasCardStates, today))
 				.length,
+			queuedCards: buildReviewQueue(activeCards, performances, { now }).length,
 			overdueCards: activeCards.filter((card) => isOverdueCard(card, cardStateByHash, today)).length,
 			newCards: activeCards.filter((card) => isNewCard(card, cardStateByHash, hasCardStates)).length,
 			cardsAddedLast7Days: activeCards.filter((card) =>

@@ -1,4 +1,4 @@
-import { and, eq, inArray, not, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, not, sql } from 'drizzle-orm';
 import { buildReviewQueue, scheduleReview, type Card, type CardPerformance, type Grade } from '@mdsrs/core';
 import {
 	CardNotFoundError,
@@ -150,10 +150,12 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 	async getReviews(cardHashes?: string[]) {
 		const database = db as DrizzleDb;
 		const query = database.select().from(mdsrsReviews);
-		const rows = (
+		const filtered =
 			cardHashes && cardHashes.length > 0
-				? await query.where(inArray(mdsrsReviews.reviewCardHash, cardHashes))
-				: await query
+				? query.where(inArray(mdsrsReviews.reviewCardHash, cardHashes))
+				: query;
+		const rows = (
+			await filtered.orderBy(asc(mdsrsReviews.reviewedAt), asc(mdsrsReviews.reviewId))
 		) as MdsrsReviewRow[];
 
 		return rows.map(rowToStoredReview);
@@ -207,6 +209,7 @@ type SelectQuery<Row = unknown> = Promise<Row[]> & {
 	where: (condition: unknown) => SelectQuery<Row>;
 	limit: (limit: number) => SelectQuery<Row>;
 	leftJoin: (table: unknown, condition: unknown) => SelectQuery<Row>;
+	orderBy: (...columns: unknown[]) => SelectQuery<Row>;
 	groupBy: (...columns: unknown[]) => Promise<StatsRow[]>;
 };
 

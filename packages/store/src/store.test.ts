@@ -27,6 +27,7 @@ describe('createMemoryStore', () => {
 			totalCards: 2,
 			activeCards: 2,
 			dueCards: 1,
+			queuedCards: 1,
 			newCards: 1,
 			reviewsToday: 1,
 			hitRateLast30Days: 1
@@ -34,7 +35,8 @@ describe('createMemoryStore', () => {
 		expect(stats.decks[0]).toMatchObject({
 			path: 'conformance',
 			activeCards: 2,
-			dueCards: 1
+			dueCards: 1,
+			queuedCards: 1
 		});
 	});
 

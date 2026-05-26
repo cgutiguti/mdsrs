@@ -146,5 +146,23 @@ export const describeSrsStoreConformance = (
 				active: true
 			});
 		});
+
+		it('returns review history oldest-to-newest', async () => {
+			const { store, cards } = await setup();
+			const [card] = cards;
+
+			if (!card) throw new Error('Expected fixture card.');
+
+			await store.syncCards([card]);
+			await store.reviewCard(card.hash, 'good', new Date('2026-01-03T00:00:00.000Z'));
+			await store.reviewCard(card.hash, 'easy', new Date('2026-01-02T00:00:00.000Z'));
+
+			const reviews = await store.getReviews([card.hash]);
+
+			expect(reviews.map((review) => review.reviewedAt)).toEqual([
+				'2026-01-02T00:00:00.000Z',
+				'2026-01-03T00:00:00.000Z'
+			]);
+		});
 	});
 };
