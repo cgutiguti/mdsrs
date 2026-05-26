@@ -1,0 +1,32 @@
+{
+	"name": "@mdsrs/postgres-drizzle",
+	"version": "0.0.0",
+	"type": "module",
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./schema": {
+			"types": "./dist/schema.d.ts",
+			"default": "./dist/schema.js"
+		}
+	},
+	"files": ["dist", "migrations"],
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"test": "vitest run",
+		"typecheck": "tsc -p tsconfig.json --noEmit"
+	},
+	"dependencies": {
+		"@mdsrs/core": "workspace:*",
+		"@mdsrs/store": "workspace:*",
+		"drizzle-orm": "^0.45.2"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"typescript": "^6.0.3",
+		"vitest": "^4.0.0"
+	}
+}
