@@ -47,6 +47,7 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 					backMarkdown: card.backMarkdown,
 					cardType: card.content.type,
 					active: true,
+					addedAt: syncedAt,
 					lastSeenAt: syncedAt
 				}))
 			)
