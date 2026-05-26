@@ -37,7 +37,7 @@ describePostgres('createPostgresDrizzleStore integration', () => {
 	describeSrsStoreConformance('createPostgresDrizzleStore', {
 		createStore: () => createPostgresDrizzleStore(drizzle(pool, { schema })),
 		reset: async () => {
-			await pool.query('TRUNCATE TABLE "mdsrs_reviews", "mdsrs_cards" RESTART IDENTITY CASCADE');
+			await pool.query('TRUNCATE TABLE "srs_reviews", "srs_cards" RESTART IDENTITY CASCADE');
 		}
 	});
 });

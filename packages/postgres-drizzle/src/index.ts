@@ -8,16 +8,25 @@ import {
 	type StoredReview
 } from '@mdsrs/store';
 import {
-	mdsrsCards,
-	mdsrsReviews,
 	schema,
-	type MdsrsCardRow,
-	type MdsrsReviewRow,
-	type NewMdsrsReviewRow
+	srsCards,
+	srsReviews,
+	type SrsCardRow,
+	type SrsReviewRow,
+	type NewSrsReviewRow
 } from './schema.js';
 
-export { mdsrsCards, mdsrsReviews, schema } from './schema.js';
-export type { MdsrsCardRow, MdsrsReviewRow, NewMdsrsCardRow, NewMdsrsReviewRow } from './schema.js';
+export { mdsrsCards, mdsrsReviews, schema, srsCards, srsReviews } from './schema.js';
+export type {
+	MdsrsCardRow,
+	MdsrsReviewRow,
+	NewMdsrsCardRow,
+	NewMdsrsReviewRow,
+	NewSrsCardRow,
+	NewSrsReviewRow,
+	SrsCardRow,
+	SrsReviewRow
+} from './schema.js';
 
 export interface DrizzlePostgresDatabase {
 	select: (fields?: unknown) => unknown;
@@ -29,14 +38,14 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 	async syncCards(cards: Card[], syncedAt = new Date()) {
 		const database = db as DrizzleDb;
 		if (cards.length === 0) {
-			await database.update(mdsrsCards).set({ active: false });
+			await database.update(srsCards).set({ active: false });
 			return;
 		}
 
 		const cardHashes = cards.map((card) => card.hash);
 
 		await database
-			.insert(mdsrsCards)
+			.insert(srsCards)
 			.values(
 				cards.map((card) => ({
 					cardHash: card.hash,
@@ -52,7 +61,7 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 				}))
 			)
 			.onConflictDoUpdate({
-				target: mdsrsCards.cardHash,
+				target: srsCards.cardHash,
 				set: {
 					deckName: sql`excluded.deck_name`,
 					filePath: sql`excluded.file_path`,
@@ -66,19 +75,19 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 			});
 
 		await database
-			.update(mdsrsCards)
+			.update(srsCards)
 			.set({ active: false })
-			.where(not(inArray(mdsrsCards.cardHash, cardHashes)));
+			.where(not(inArray(srsCards.cardHash, cardHashes)));
 	},
 
 	async getCards(cardHashes?: string[]) {
 		const database = db as DrizzleDb;
-		const query = database.select().from(mdsrsCards);
+		const query = database.select().from(srsCards);
 		const rows = (
 			cardHashes && cardHashes.length > 0
-				? await query.where(inArray(mdsrsCards.cardHash, cardHashes))
+				? await query.where(inArray(srsCards.cardHash, cardHashes))
 				: await query
-		) as MdsrsCardRow[];
+		) as SrsCardRow[];
 
 		return new Map(rows.map((row) => [row.cardHash, rowToStoredCard(row)]));
 	},
@@ -89,10 +98,10 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 		const database = db as DrizzleDb;
 		const rows = (await database
 			.select()
-			.from(mdsrsCards)
+			.from(srsCards)
 			.where(
-				and(inArray(mdsrsCards.cardHash, cardHashes), eq(mdsrsCards.active, true))
-			)) as MdsrsCardRow[];
+				and(inArray(srsCards.cardHash, cardHashes), eq(srsCards.active, true))
+			)) as SrsCardRow[];
 
 		return new Map(rows.map((row) => [row.cardHash, rowToPerformance(row)]));
 	},
@@ -109,9 +118,9 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 		const database = db as DrizzleDb;
 		const rows = (await database
 			.select()
-			.from(mdsrsCards)
-			.where(and(eq(mdsrsCards.cardHash, cardHash), eq(mdsrsCards.active, true)))
-			.limit(1)) as MdsrsCardRow[];
+			.from(srsCards)
+			.where(and(eq(srsCards.cardHash, cardHash), eq(srsCards.active, true)))
+			.limit(1)) as SrsCardRow[];
 		const row = rows[0];
 		if (!row) throw new CardNotFoundError(cardHash);
 
@@ -119,7 +128,7 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 		const reviewedAtDate = new Date(result.lastReviewedAt);
 
 		await database
-			.update(mdsrsCards)
+			.update(srsCards)
 			.set({
 				lastReviewedAt: reviewedAtDate,
 				stability: result.stability,
@@ -129,9 +138,9 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 				dueDate: result.dueDate,
 				reviewCount: result.reviewCount
 			})
-			.where(eq(mdsrsCards.cardHash, cardHash));
+			.where(eq(srsCards.cardHash, cardHash));
 
-		const review: NewMdsrsReviewRow = {
+		const review: NewSrsReviewRow = {
 			reviewCardHash: cardHash,
 			reviewedAt: reviewedAtDate,
 			grade,
@@ -142,21 +151,21 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 			dueDate: result.dueDate
 		};
 
-		await database.insert(mdsrsReviews).values(review);
+		await database.insert(srsReviews).values(review);
 
 		return result;
 	},
 
 	async getReviews(cardHashes?: string[]) {
 		const database = db as DrizzleDb;
-		const query = database.select().from(mdsrsReviews);
+		const query = database.select().from(srsReviews);
 		const filtered =
 			cardHashes && cardHashes.length > 0
-				? query.where(inArray(mdsrsReviews.reviewCardHash, cardHashes))
+				? query.where(inArray(srsReviews.reviewCardHash, cardHashes))
 				: query;
 		const rows = (
-			await filtered.orderBy(asc(mdsrsReviews.reviewedAt), asc(mdsrsReviews.reviewId))
-		) as MdsrsReviewRow[];
+			await filtered.orderBy(asc(srsReviews.reviewedAt), asc(srsReviews.reviewId))
+		) as SrsReviewRow[];
 
 		return rows.map(rowToStoredReview);
 	},
@@ -167,31 +176,31 @@ export const createPostgresDrizzleStore = (db: DrizzlePostgresDatabase): SrsStor
 		const database = db as DrizzleDb;
 		const rows = await database
 			.select({
-				cardHash: mdsrsCards.cardHash,
-				reviewCount: mdsrsCards.reviewCount,
-				difficulty: mdsrsCards.difficulty,
-				stability: mdsrsCards.stability,
-				intervalDays: mdsrsCards.intervalDays,
-				dueDate: mdsrsCards.dueDate,
-				lastReviewedAt: mdsrsCards.lastReviewedAt,
-				active: mdsrsCards.active,
-				forgotCount: sql<number>`count(*) filter (where ${mdsrsReviews.grade} = 'forgot')`,
-				hardCount: sql<number>`count(*) filter (where ${mdsrsReviews.grade} = 'hard')`,
-				goodCount: sql<number>`count(*) filter (where ${mdsrsReviews.grade} = 'good')`,
-				easyCount: sql<number>`count(*) filter (where ${mdsrsReviews.grade} = 'easy')`
+				cardHash: srsCards.cardHash,
+				reviewCount: srsCards.reviewCount,
+				difficulty: srsCards.difficulty,
+				stability: srsCards.stability,
+				intervalDays: srsCards.intervalDays,
+				dueDate: srsCards.dueDate,
+				lastReviewedAt: srsCards.lastReviewedAt,
+				active: srsCards.active,
+				forgotCount: sql<number>`count(*) filter (where ${srsReviews.grade} = 'forgot')`,
+				hardCount: sql<number>`count(*) filter (where ${srsReviews.grade} = 'hard')`,
+				goodCount: sql<number>`count(*) filter (where ${srsReviews.grade} = 'good')`,
+				easyCount: sql<number>`count(*) filter (where ${srsReviews.grade} = 'easy')`
 			})
-			.from(mdsrsCards)
-			.leftJoin(mdsrsReviews, eq(mdsrsReviews.reviewCardHash, mdsrsCards.cardHash))
-			.where(inArray(mdsrsCards.cardHash, cardHashes))
+			.from(srsCards)
+			.leftJoin(srsReviews, eq(srsReviews.reviewCardHash, srsCards.cardHash))
+			.where(inArray(srsCards.cardHash, cardHashes))
 			.groupBy(
-				mdsrsCards.cardHash,
-				mdsrsCards.reviewCount,
-				mdsrsCards.difficulty,
-				mdsrsCards.stability,
-				mdsrsCards.intervalDays,
-				mdsrsCards.dueDate,
-				mdsrsCards.lastReviewedAt,
-				mdsrsCards.active
+				srsCards.cardHash,
+				srsCards.reviewCount,
+				srsCards.difficulty,
+				srsCards.stability,
+				srsCards.intervalDays,
+				srsCards.dueDate,
+				srsCards.lastReviewedAt,
+				srsCards.active
 			);
 
 		return new Map(rows.map((row) => [row.cardHash, statsRowToCardStats(row)]));
@@ -224,7 +233,7 @@ type UpdateQuery = {
 	where: (condition: unknown) => Promise<unknown>;
 };
 
-export const rowToPerformance = (row: Pick<MdsrsCardRow, 'lastReviewedAt' | 'stability' | 'difficulty' | 'intervalRaw' | 'intervalDays' | 'dueDate' | 'reviewCount'>): CardPerformance => ({
+export const rowToPerformance = (row: Pick<SrsCardRow, 'lastReviewedAt' | 'stability' | 'difficulty' | 'intervalRaw' | 'intervalDays' | 'dueDate' | 'reviewCount'>): CardPerformance => ({
 	lastReviewedAt: toIsoString(row.lastReviewedAt),
 	stability: row.stability,
 	difficulty: row.difficulty,
@@ -234,7 +243,7 @@ export const rowToPerformance = (row: Pick<MdsrsCardRow, 'lastReviewedAt' | 'sta
 	reviewCount: row.reviewCount
 });
 
-export const rowToStoredCard = (row: MdsrsCardRow): StoredCard => ({
+export const rowToStoredCard = (row: SrsCardRow): StoredCard => ({
 	cardHash: row.cardHash,
 	deckName: row.deckName,
 	filePath: row.filePath,
@@ -248,7 +257,7 @@ export const rowToStoredCard = (row: MdsrsCardRow): StoredCard => ({
 	performance: rowToPerformance(row)
 });
 
-export const rowToStoredReview = (row: MdsrsReviewRow): StoredReview => ({
+export const rowToStoredReview = (row: SrsReviewRow): StoredReview => ({
 	reviewId: row.reviewId,
 	cardHash: row.reviewCardHash,
 	reviewedAt: toIsoString(row.reviewedAt) ?? new Date(0).toISOString(),

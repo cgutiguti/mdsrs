@@ -6,8 +6,8 @@ import {
 	rowToStoredCard,
 	rowToStoredReview,
 	statsRowToCardStats,
-	type MdsrsCardRow,
-	type MdsrsReviewRow
+	type SrsCardRow,
+	type SrsReviewRow
 } from './index.js';
 
 const cardRow = {
@@ -28,7 +28,7 @@ const cardRow = {
 	intervalDays: 6,
 	dueDate: '2026-01-09',
 	reviewCount: 2
-} satisfies MdsrsCardRow;
+} satisfies SrsCardRow;
 
 describe('row mapping', () => {
 	it('maps card rows into stored cards and performances', () => {
@@ -71,7 +71,7 @@ describe('row mapping', () => {
 			intervalRaw: 5.8,
 			intervalDays: 6,
 			dueDate: '2026-01-09'
-		} satisfies MdsrsReviewRow;
+		} satisfies SrsReviewRow;
 
 		expect(rowToStoredReview(reviewRow)).toEqual({
 			reviewId: 7,
@@ -129,11 +129,11 @@ describe('migration', () => {
 	it('creates the SRS card and review tables with indexes', async () => {
 		const sql = await readFile(migrations.initial, 'utf8');
 
-		expect(sql).toContain('CREATE TABLE IF NOT EXISTS "mdsrs_cards"');
-		expect(sql).toContain('CREATE TABLE IF NOT EXISTS "mdsrs_reviews"');
+		expect(sql).toContain('CREATE TABLE IF NOT EXISTS "srs_cards"');
+		expect(sql).toContain('CREATE TABLE IF NOT EXISTS "srs_reviews"');
 		expect(sql).toContain('FOREIGN KEY ("review_card_hash")');
 		expect(sql).toContain('ON DELETE cascade');
-		expect(sql).toContain('CREATE INDEX IF NOT EXISTS "mdsrs_cards_active_due_idx"');
-		expect(sql).toContain('CREATE INDEX IF NOT EXISTS "mdsrs_reviews_card_hash_idx"');
+		expect(sql).toContain('CREATE INDEX IF NOT EXISTS "srs_cards_active_due_idx"');
+		expect(sql).toContain('CREATE INDEX IF NOT EXISTS "srs_reviews_card_hash_idx"');
 	});
 });

@@ -436,8 +436,8 @@ Run the migration in your database:
 
 ```sql
 -- from packages/postgres-drizzle/migrations/0000_initial.sql
-CREATE TABLE IF NOT EXISTS "mdsrs_cards" (...);
-CREATE TABLE IF NOT EXISTS "mdsrs_reviews" (...);
+CREATE TABLE IF NOT EXISTS "srs_cards" (...);
+CREATE TABLE IF NOT EXISTS "srs_reviews" (...);
 ```
 
 Create a Drizzle database and pass it to the adapter:

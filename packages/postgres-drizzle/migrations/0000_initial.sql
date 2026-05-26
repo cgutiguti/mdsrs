@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "mdsrs_cards" (
+CREATE TABLE IF NOT EXISTS "srs_cards" (
 	"card_hash" text PRIMARY KEY NOT NULL,
 	"deck_name" text NOT NULL,
 	"file_path" text NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "mdsrs_cards" (
 	"review_count" integer DEFAULT 0 NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS "mdsrs_reviews" (
+CREATE TABLE IF NOT EXISTS "srs_reviews" (
 	"review_id" bigserial PRIMARY KEY NOT NULL,
 	"review_card_hash" text NOT NULL,
 	"reviewed_at" timestamp with time zone NOT NULL,
@@ -28,15 +28,15 @@ CREATE TABLE IF NOT EXISTS "mdsrs_reviews" (
 	"interval_raw" double precision NOT NULL,
 	"interval_days" integer NOT NULL,
 	"due_date" date NOT NULL,
-	CONSTRAINT "mdsrs_reviews_review_card_hash_mdsrs_cards_card_hash_fk"
+	CONSTRAINT "srs_reviews_review_card_hash_srs_cards_card_hash_fk"
 		FOREIGN KEY ("review_card_hash")
-		REFERENCES "mdsrs_cards"("card_hash")
+		REFERENCES "srs_cards"("card_hash")
 		ON DELETE cascade
 		ON UPDATE no action
 );
 
-CREATE INDEX IF NOT EXISTS "mdsrs_cards_active_due_idx"
-	ON "mdsrs_cards" ("active", "due_date");
+CREATE INDEX IF NOT EXISTS "srs_cards_active_due_idx"
+	ON "srs_cards" ("active", "due_date");
 
-CREATE INDEX IF NOT EXISTS "mdsrs_reviews_card_hash_idx"
-	ON "mdsrs_reviews" ("review_card_hash");
+CREATE INDEX IF NOT EXISTS "srs_reviews_card_hash_idx"
+	ON "srs_reviews" ("review_card_hash");

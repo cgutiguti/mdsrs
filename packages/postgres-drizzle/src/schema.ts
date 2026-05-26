@@ -10,7 +10,7 @@ import {
 	timestamp
 } from 'drizzle-orm/pg-core';
 
-export const mdsrsCards = pgTable('mdsrs_cards', {
+export const srsCards = pgTable('srs_cards', {
 	cardHash: text('card_hash').primaryKey(),
 	deckName: text('deck_name').notNull(),
 	filePath: text('file_path').notNull(),
@@ -30,8 +30,8 @@ export const mdsrsCards = pgTable('mdsrs_cards', {
 	reviewCount: integer('review_count').notNull().default(0)
 });
 
-export const mdsrsReviews = pgTable(
-	'mdsrs_reviews',
+export const srsReviews = pgTable(
+	'srs_reviews',
 	{
 		reviewId: bigserial('review_id', { mode: 'number' }).primaryKey(),
 		reviewCardHash: text('review_card_hash').notNull(),
@@ -46,18 +46,26 @@ export const mdsrsReviews = pgTable(
 	(table) => [
 		foreignKey({
 			columns: [table.reviewCardHash],
-			foreignColumns: [mdsrsCards.cardHash],
-			name: 'mdsrs_reviews_review_card_hash_mdsrs_cards_card_hash_fk'
+			foreignColumns: [srsCards.cardHash],
+			name: 'srs_reviews_review_card_hash_srs_cards_card_hash_fk'
 		}).onDelete('cascade')
 	]
 );
 
 export const schema = {
-	mdsrsCards,
-	mdsrsReviews
+	srsCards,
+	srsReviews
 };
 
-export type MdsrsCardRow = typeof mdsrsCards.$inferSelect;
-export type NewMdsrsCardRow = typeof mdsrsCards.$inferInsert;
-export type MdsrsReviewRow = typeof mdsrsReviews.$inferSelect;
-export type NewMdsrsReviewRow = typeof mdsrsReviews.$inferInsert;
+export const mdsrsCards = srsCards;
+export const mdsrsReviews = srsReviews;
+
+export type SrsCardRow = typeof srsCards.$inferSelect;
+export type NewSrsCardRow = typeof srsCards.$inferInsert;
+export type SrsReviewRow = typeof srsReviews.$inferSelect;
+export type NewSrsReviewRow = typeof srsReviews.$inferInsert;
+
+export type MdsrsCardRow = SrsCardRow;
+export type NewMdsrsCardRow = NewSrsCardRow;
+export type MdsrsReviewRow = SrsReviewRow;
+export type NewMdsrsReviewRow = NewSrsReviewRow;
