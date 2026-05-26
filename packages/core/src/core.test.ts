@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	buildDeckTree,
+	buildCollectionStats,
 	buildReviewQueue,
 	hashCardContent,
 	hashCardFamily,
@@ -172,5 +173,111 @@ describe('buildReviewQueue', () => {
 			cards[2]?.hash
 		]);
 		expect(buildReviewQueue(cards, performances, { burySiblings: false })).toHaveLength(3);
+	});
+});
+
+describe('buildCollectionStats', () => {
+	it('builds generic collection and deck stats from card state and reviews', () => {
+		const cards = parseCollection([
+			source,
+			{
+				...source,
+				deckName: 'Chapter',
+				filePath: 'example/chapter.md',
+				nodePath: 'example/chapter',
+				displayName: 'Chapter',
+				text: 'Q: One?\nA: Two.'
+			}
+		]);
+		const tree = buildDeckTree(cards);
+		const clozeCards = cards.filter((card) => card.content.type === 'cloze');
+		const [firstCloze, secondCloze] = clozeCards;
+		const basic = cards.find((card) => card.deckName === 'Example' && card.content.type === 'basic');
+		const chapter = cards.find((card) => card.deckName === 'Chapter');
+
+		if (!firstCloze || !secondCloze || !basic || !chapter) {
+			throw new Error('Expected fixture cards.');
+		}
+
+		const stats = buildCollectionStats(
+			cards,
+			tree,
+			[
+				{
+					cardHash: firstCloze.hash,
+					active: true,
+					addedAt: '2026-01-09T00:00:00.000Z',
+					dueDate: null
+				},
+				{
+					cardHash: secondCloze.hash,
+					active: true,
+					addedAt: '2026-01-01T00:00:00.000Z',
+					dueDate: '2026-01-09'
+				},
+				{
+					cardHash: basic.hash,
+					active: true,
+					addedAt: '2025-12-01T00:00:00.000Z',
+					dueDate: '2026-01-11'
+				},
+				{
+					cardHash: chapter.hash,
+					active: false,
+					addedAt: '2026-01-08T00:00:00.000Z',
+					dueDate: null
+				}
+			],
+			[
+				{
+					cardHash: firstCloze.hash,
+					reviewedAt: '2026-01-10T12:00:00.000Z',
+					grade: 'good'
+				},
+				{
+					cardHash: secondCloze.hash,
+					reviewedAt: '2026-01-02T12:00:00.000Z',
+					grade: 'forgot'
+				},
+				{
+					cardHash: chapter.hash,
+					reviewedAt: '2026-01-10T12:00:00.000Z',
+					grade: 'easy'
+				}
+			],
+			{
+				now: new Date('2026-01-10T12:00:00.000Z')
+			}
+		);
+
+		expect(stats).toMatchObject({
+			totalCards: 4,
+			activeCards: 3,
+			dueCards: 2,
+			overdueCards: 1,
+			newCards: 1,
+			cardsAddedLast7Days: 1,
+			reviewsToday: 1,
+			reviewsLast7Days: 1,
+			reviewActiveDaysLast14: 2,
+			hitRateLast30Days: 0.5,
+			daysSinceLastReview: 0
+		});
+		expect(stats.decks[0]).toMatchObject({
+			path: 'example',
+			activeCards: 3,
+			dueCards: 2,
+			overdueCards: 1,
+			newCards: 1,
+			reviewsLast7Days: 1,
+			hitRateLast30Days: 0.5,
+			children: [
+				{
+					path: 'example/chapter',
+					activeCards: 0,
+					dueCards: 0
+				}
+			]
+		});
 	});
 });

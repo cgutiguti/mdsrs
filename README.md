@@ -316,6 +316,105 @@ const snapshot = store.snapshot();
 const restored = createMemoryStore(snapshot);
 ```
 
+## Review Queue Behavior
+
+`getDueCards` uses the same queue builder as `@mdsrs/core`.
+
+A card is due when it has no due date yet, or when its due date is today or in
+the past.
+
+The queue is deterministic:
+
+1. Earlier due dates come first.
+2. Cards with fewer reviews come first.
+3. Ties are broken by card hash.
+
+Cloze siblings are buried by default. If one `C:` line creates several sibling
+cards, the queue shows at most one of those siblings in a single queue. This
+reduces answer leakage between related cloze cards.
+
+You can turn sibling burying off:
+
+```ts
+const due = await store.getDueCards(collection.cards, {
+	burySiblings: false
+});
+```
+
+You can also ask for one deck:
+
+```ts
+const due = await store.getDueCards(collection.cards, {
+	deckName: 'cards/example/math',
+	limit: 10
+});
+```
+
+`limit` is applied after filtering due cards and burying siblings.
+
+## Collection Stats
+
+`mdsrs` exposes generic stats that apps can use to build dashboards, progress
+views, or visualizations. The library does not include any specific visual
+metaphor.
+
+Use `buildCollectionStats` directly if you already have card state and review
+history:
+
+```ts
+import { buildCollectionStats } from '@mdsrs/core';
+
+const stats = buildCollectionStats(
+	collection.cards,
+	collection.deckTree,
+	[
+		{
+			cardHash: card.hash,
+			active: true,
+			addedAt: '2026-01-01T00:00:00.000Z',
+			dueDate: '2026-01-05'
+		}
+	],
+	[
+		{
+			cardHash: card.hash,
+			reviewedAt: '2026-01-02T00:00:00.000Z',
+			grade: 'good'
+		}
+	]
+);
+```
+
+Use `getCollectionStats` if you have an `SrsStore`:
+
+```ts
+import { getCollectionStats } from '@mdsrs/store';
+
+const stats = await getCollectionStats(store, collection.cards, collection.deckTree);
+
+console.log(stats.totalCards);
+console.log(stats.activeCards);
+console.log(stats.dueCards);
+console.log(stats.overdueCards);
+console.log(stats.reviewsToday);
+console.log(stats.hitRateLast30Days);
+console.log(stats.decks);
+```
+
+Deck stats include the same neutral ingredients at each node:
+
+```ts
+for (const deck of stats.decks) {
+	console.log(deck.path);
+	console.log(deck.dueCards);
+	console.log(deck.overdueCards);
+	console.log(deck.reviewsLast7Days);
+}
+```
+
+These stats are intentionally plain. For example, an app can turn them into a
+plant, streak view, calendar, progress bars, or anything else.
+
 ## Use Postgres With Drizzle
 
 Use `@mdsrs/postgres-drizzle` when you want review state in Postgres.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createMemoryStore, isOverdue } from './index.js';
+import { buildDeckTree } from '@mdsrs/core';
+import { createMemoryStore, getCollectionStats, isOverdue } from './index.js';
 import { describeSrsStoreConformance, makeConformanceCards } from '../test/conformance.js';
 
 describeSrsStoreConformance('createMemoryStore', {
@@ -7,6 +8,36 @@ describeSrsStoreConformance('createMemoryStore', {
 });
 
 describe('createMemoryStore', () => {
+	it('builds generic collection stats through the store interface', async () => {
+		const store = createMemoryStore();
+		const cards = makeConformanceCards();
+		const tree = buildDeckTree(cards);
+		const [card] = cards;
+
+		if (!card) throw new Error('Expected fixture card.');
+
+		await store.syncCards(cards, new Date('2026-01-01T00:00:00.000Z'));
+		await store.reviewCard(card.hash, 'good', new Date('2026-01-02T00:00:00.000Z'));
+
+		const stats = await getCollectionStats(store, cards, tree, {
+			now: new Date('2026-01-02T12:00:00.000Z')
+		});
+
+		expect(stats).toMatchObject({
+			totalCards: 2,
+			activeCards: 2,
+			dueCards: 1,
+			newCards: 1,
+			reviewsToday: 1,
+			hitRateLast30Days: 1
+		});
+		expect(stats.decks[0]).toMatchObject({
+			path: 'conformance',
+			activeCards: 2,
+			dueCards: 1
+		});
+	});
+
 	it('snapshots and restores without sharing mutable references', async () => {
 		const store = createMemoryStore();
 		const [card] = makeConformanceCards();

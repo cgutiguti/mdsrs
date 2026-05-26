@@ -1,11 +1,15 @@
 import {
+	buildCollectionStats,
 	buildReviewQueue,
 	scheduleReview,
 	toDateString,
 	toTimestamp,
 	type BuildReviewQueueOptions,
+	type BuildCollectionStatsOptions,
 	type Card,
 	type CardPerformance,
+	type CollectionStats,
+	type DeckTreeNode,
 	type Grade,
 	type ReviewQueueItem,
 	type ReviewResult
@@ -63,6 +67,36 @@ export interface SrsStore {
 	getReviews(cardHashes?: string[]): Promise<StoredReview[]>;
 	getCardStats(cardHashes: string[]): Promise<Map<string, CardStats>>;
 }
+
+export const getCollectionStats = async (
+	store: SrsStore,
+	cards: Card[],
+	deckTree: DeckTreeNode[],
+	options: BuildCollectionStatsOptions = {}
+): Promise<CollectionStats> => {
+	const cardHashes = cards.map((card) => card.hash);
+	const [storedCards, reviews] = await Promise.all([
+		store.getCards(cardHashes),
+		store.getReviews(cardHashes)
+	]);
+
+	return buildCollectionStats(
+		cards,
+		deckTree,
+		[...storedCards.values()].map((card) => ({
+			cardHash: card.cardHash,
+			active: card.active,
+			addedAt: card.addedAt,
+			dueDate: card.performance.dueDate
+		})),
+		reviews.map((review) => ({
+			cardHash: review.cardHash,
+			reviewedAt: review.reviewedAt,
+			grade: review.grade
+		})),
+		options
+	);
+};
 
 export interface MemoryStoreSnapshot {
 	cards: StoredCard[];
@@ -268,4 +302,3 @@ const countGrade = (reviews: StoredReview[], grade: Grade) =>
 
 export const isOverdue = (performance: Pick<CardPerformance, 'dueDate'>, now = new Date()) =>
 	performance.dueDate != null && performance.dueDate < toDateString(now);
-

@@ -4,5 +4,5 @@ export * from './parse.js';
 export * from './queue.js';
 export * from './render.js';
 export * from './schedule.js';
+export * from './stats.js';
 export * from './types.js';
-
