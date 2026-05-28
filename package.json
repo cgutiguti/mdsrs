@@ -25,7 +25,7 @@
 		"build": "pnpm --filter @mdsrs/core build && pnpm --filter @mdsrs/store build && pnpm --filter @mdsrs/file-store build && pnpm --filter @mdsrs/postgres-drizzle build && pnpm --filter @mdsrs/fs build && pnpm --filter @mdsrs/markdown build && pnpm --filter @mdsrs/cli build && pnpm --filter @mdsrs/example-sveltekit build",
 		"build:pages": "pnpm --filter @mdsrs/core build && pnpm --filter @mdsrs/store build && pnpm --filter @mdsrs/fs build && pnpm --filter @mdsrs/markdown build && BASE_PATH=/mdsrs pnpm --filter @mdsrs/example-sveltekit build",
 		"test": "pnpm -r test",
-		"typecheck": "pnpm -r typecheck"
+		"typecheck": "pnpm --filter @mdsrs/core build && pnpm --filter @mdsrs/store build && pnpm --filter @mdsrs/file-store build && pnpm --filter @mdsrs/fs build && pnpm --filter @mdsrs/markdown build && pnpm -r typecheck"
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.0",
