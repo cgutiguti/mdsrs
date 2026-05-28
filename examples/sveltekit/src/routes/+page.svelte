@@ -13,6 +13,7 @@
 			or Postgres.
 		</p>
 		<div class="actions">
+			<a class="button" href={`${base}/review`}>Try the review demo</a>
 			<a class="button" href={`${base}/browse`}>Browse the sample cards</a>
 			<a class="button" href="https://github.com/cgutiguti/mdsrs">View on GitHub</a>
 		</div>
@@ -60,8 +61,8 @@ await store.reviewCard(queue[0].card.hash, 'good');</code></pre>
 		<pre><code>pnpm install
 pnpm --filter @mdsrs/example-sveltekit dev</code></pre>
 		<p>
-			The hosted site is static, so it shows the docs and the browse example. The review
-			screen is part of the same SvelteKit app and is meant to run locally or on a server.
+			The hosted site is static. The review demo stores progress in this browser with
+			<code>localStorage</code>, so it works without a hosted backend.
 		</p>
 	</section>
 </main>

@@ -1,35 +1,109 @@
 <script lang="ts">
-	let { data, form } = $props();
-	let revealed = $state(false);
-	let currentHash = $state<string | null>(null);
+	import { onMount } from 'svelte';
+	import type { Grade } from '@mdsrs/core';
+	import { createMemoryStore, type MemoryStoreSnapshot } from '@mdsrs/store';
+	import type { PageData } from './$types';
 
+	let { data }: { data: PageData } = $props();
+
+	type ReviewCard = PageData['cards'][number];
+
+	const storageKey = 'mdsrs-example-review-v1';
 	const gradeLabels = [
 		['forgot', 'Forgot'],
 		['hard', 'Hard'],
 		['good', 'Good'],
 		['easy', 'Easy']
-	] as const;
+	] as const satisfies ReadonlyArray<readonly [Grade, string]>;
+
+	let queue = $state<ReviewCard[]>([]);
+	let currentCard = $state<ReviewCard | null>(null);
+	let revealed = $state(false);
+	let currentHash = $state<string | null>(null);
+	let initialized = $state(false);
+	let reviewedCount = $state(0);
+	let message = $state<string | null>(null);
+	let store = createMemoryStore();
 
 	$effect(() => {
-		const nextHash = data.currentCard?.hash ?? null;
+		const nextHash = currentCard?.hash ?? null;
 		if (nextHash !== currentHash) {
 			currentHash = nextHash;
 			revealed = false;
 		}
 	});
+
+	onMount(() => {
+		void initializeStore();
+	});
+
+	const initializeStore = async () => {
+		store = createMemoryStore(readSnapshot());
+		await store.syncCards(data.cards);
+		await refreshQueue();
+		persistSnapshot();
+		initialized = true;
+	};
+
+	const refreshQueue = async () => {
+		const due = await store.getDueCards(data.cards, {
+			burySiblings: true
+		});
+		queue = due.map((item) => item.card as ReviewCard);
+		currentCard = queue[0] ?? null;
+		reviewedCount = store.snapshot().reviews.length;
+	};
+
+	const review = async (grade: Grade) => {
+		if (!currentCard) return;
+		await store.reviewCard(currentCard.hash, grade);
+		persistSnapshot();
+		message = `Recorded ${grade}.`;
+		await refreshQueue();
+	};
+
+	const reset = async () => {
+		localStorage.removeItem(storageKey);
+		store = createMemoryStore();
+		await store.syncCards(data.cards);
+		persistSnapshot();
+		message = 'Reset local review progress.';
+		await refreshQueue();
+	};
+
+	const readSnapshot = (): Partial<MemoryStoreSnapshot> | undefined => {
+		const value = localStorage.getItem(storageKey);
+		if (!value) return undefined;
+
+		try {
+			return JSON.parse(value) as Partial<MemoryStoreSnapshot>;
+		} catch {
+			localStorage.removeItem(storageKey);
+			return undefined;
+		}
+	};
+
+	const persistSnapshot = () => {
+		localStorage.setItem(storageKey, JSON.stringify(store.snapshot()));
+	};
 </script>
 
 <main>
 	<h1>Review</h1>
+	<p class="muted">This demo saves review progress in this browser with <code>localStorage</code>.</p>
 
 	<div class="stats" aria-label="Collection summary">
 		<div class="stat">
-			<strong>{data.dueCards}</strong>
+			<strong>{initialized ? queue.length : '...'}</strong>
 			<span class="muted">due</span>
 		</div>
 		<div class="stat">
 			<strong>{data.totalCards}</strong>
 			<span class="muted">cards</span>
+		</div>
+		<div class="stat">
+			<strong>{reviewedCount}</strong>
+			<span class="muted">reviews saved</span>
 		</div>
 		<div class="stat">
 			<strong>{data.totalSources}</strong>
@@ -41,32 +115,36 @@
 		</div>
 	</div>
 
-	{#if form?.message}
-		<p role="alert">{form.message}</p>
+	{#if message}
+		<p role="status">{message}</p>
 	{/if}
 
-	{#if data.currentCard}
+	{#if !initialized}
+		<section class="card-face">
+			<h2>Loading</h2>
+			<p class="muted">Opening the local review store.</p>
+		</section>
+	{:else if currentCard}
 		<p class="muted">
-			{data.currentCard.deckName} · <code>{data.currentCard.hash.slice(0, 12)}</code>
+			{currentCard.deckName} · <code>{currentCard.hash.slice(0, 12)}</code>
 		</p>
 
 		<section class="card-face" aria-label="Front">
 			<h2>Front</h2>
-			{@html data.currentCard.frontHtml}
+			{@html currentCard.frontHtml}
 		</section>
 
 		{#if revealed}
 			<section class="card-face" aria-label="Back">
 				<h2>Back</h2>
-				{@html data.currentCard.backHtml}
+				{@html currentCard.backHtml}
 			</section>
 
-			<form method="POST" action="?/review" class="actions">
-				<input type="hidden" name="cardHash" value={data.currentCard.hash} />
+			<div class="actions">
 				{#each gradeLabels as [grade, label]}
-					<button type="submit" name="grade" value={grade}>{label}</button>
+					<button type="button" onclick={() => review(grade)}>{label}</button>
 				{/each}
-			</form>
+			</div>
 		{:else}
 			<div class="actions">
 				<button type="button" onclick={() => (revealed = true)}>Reveal answer</button>
@@ -79,7 +157,7 @@
 		</section>
 	{/if}
 
-	<form method="POST" action="?/reset" class="actions">
-		<button type="submit">Reset in-memory reviews</button>
-	</form>
+	<div class="actions">
+		<button type="button" onclick={reset}>Reset local reviews</button>
+	</div>
 </main>

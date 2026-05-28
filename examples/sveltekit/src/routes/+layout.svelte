@@ -11,6 +11,7 @@
 		<p class="site-title">mdsrs SvelteKit example</p>
 		<nav class="nav" aria-label="Primary">
 			<a href={`${base}/`}>docs</a>
+			<a href={`${base}/review`}>review</a>
 			<a href={`${base}/browse`}>browse</a>
 		</nav>
 	</div>
