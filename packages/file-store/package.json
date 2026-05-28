@@ -1,6 +1,18 @@
 {
 	"name": "@mdsrs/file-store",
 	"version": "0.0.0",
+	"description": "Local JSON-file SrsStore backend for mdsrs.",
+	"homepage": "https://cgutiguti.github.io/mdsrs/",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cgutiguti/mdsrs.git",
+		"directory": "packages/file-store"
+	},
+	"bugs": {
+		"url": "https://github.com/cgutiguti/mdsrs/issues"
+	},
+	"license": "MIT",
+	"keywords": ["spaced-repetition", "srs", "markdown", "flashcards", "local-first"],
 	"type": "module",
 	"exports": {
 		".": {

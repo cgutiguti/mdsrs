@@ -1,6 +1,18 @@
 {
 	"name": "@mdsrs/markdown",
 	"version": "0.0.0",
+	"description": "Safe Markdown, math, and media renderer for mdsrs cards.",
+	"homepage": "https://cgutiguti.github.io/mdsrs/",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cgutiguti/mdsrs.git",
+		"directory": "packages/markdown"
+	},
+	"bugs": {
+		"url": "https://github.com/cgutiguti/mdsrs/issues"
+	},
+	"license": "MIT",
+	"keywords": ["spaced-repetition", "srs", "markdown", "katex", "flashcards"],
 	"type": "module",
 	"sideEffects": false,
 	"exports": {

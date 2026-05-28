@@ -1,6 +1,18 @@
 {
 	"name": "@mdsrs/fs",
 	"version": "0.0.0",
+	"description": "Filesystem loader for Markdown-native mdsrs card collections.",
+	"homepage": "https://cgutiguti.github.io/mdsrs/",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cgutiguti/mdsrs.git",
+		"directory": "packages/fs"
+	},
+	"bugs": {
+		"url": "https://github.com/cgutiguti/mdsrs/issues"
+	},
+	"license": "MIT",
+	"keywords": ["spaced-repetition", "srs", "markdown", "flashcards", "filesystem"],
 	"type": "module",
 	"sideEffects": false,
 	"exports": {

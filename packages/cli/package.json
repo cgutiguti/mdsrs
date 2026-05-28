@@ -1,6 +1,18 @@
 {
 	"name": "@mdsrs/cli",
 	"version": "0.0.0",
+	"description": "Command line tools for Markdown-native mdsrs card collections.",
+	"homepage": "https://cgutiguti.github.io/mdsrs/",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cgutiguti/mdsrs.git",
+		"directory": "packages/cli"
+	},
+	"bugs": {
+		"url": "https://github.com/cgutiguti/mdsrs/issues"
+	},
+	"license": "MIT",
+	"keywords": ["spaced-repetition", "srs", "markdown", "flashcards", "cli"],
 	"type": "module",
 	"sideEffects": false,
 	"bin": {

@@ -1,5 +1,11 @@
 # mdsrs
 
+[![CI](https://github.com/cgutiguti/mdsrs/actions/workflows/ci.yml/badge.svg)](https://github.com/cgutiguti/mdsrs/actions/workflows/ci.yml)
+[![Pages](https://github.com/cgutiguti/mdsrs/actions/workflows/pages.yml/badge.svg)](https://github.com/cgutiguti/mdsrs/actions/workflows/pages.yml)
+[![npm](https://img.shields.io/npm/v/@mdsrs/core.svg)](https://www.npmjs.com/package/@mdsrs/core)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/cgutiguti/mdsrs?style=social)](https://github.com/cgutiguti/mdsrs/stargazers)
+
 Markdown-native spaced repetition with deterministic, content-addressed cards.
 
 `mdsrs` is a small TypeScript toolkit for building spaced repetition systems.
@@ -646,6 +652,12 @@ The example also builds a static docs and browse site for GitHub Pages:
 ```sh
 pnpm build:pages
 ```
+
+The hosted site lives at <https://cgutiguti.github.io/mdsrs/>.
+
+## Stars
+
+[![Star History Chart](https://api.star-history.com/svg?repos=cgutiguti/mdsrs&type=Date)](https://www.star-history.com/#cgutiguti/mdsrs&Date)
 
 ## Development
 

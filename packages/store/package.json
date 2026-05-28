@@ -1,6 +1,18 @@
 {
 	"name": "@mdsrs/store",
 	"version": "0.0.0",
+	"description": "Shared SrsStore interface, memory store, and collection stats helpers for mdsrs.",
+	"homepage": "https://cgutiguti.github.io/mdsrs/",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cgutiguti/mdsrs.git",
+		"directory": "packages/store"
+	},
+	"bugs": {
+		"url": "https://github.com/cgutiguti/mdsrs/issues"
+	},
+	"license": "MIT",
+	"keywords": ["spaced-repetition", "srs", "markdown", "flashcards", "store"],
 	"type": "module",
 	"sideEffects": false,
 	"exports": {

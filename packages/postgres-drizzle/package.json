@@ -1,6 +1,18 @@
 {
 	"name": "@mdsrs/postgres-drizzle",
 	"version": "0.0.0",
+	"description": "Postgres and Drizzle SrsStore backend for mdsrs.",
+	"homepage": "https://cgutiguti.github.io/mdsrs/",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cgutiguti/mdsrs.git",
+		"directory": "packages/postgres-drizzle"
+	},
+	"bugs": {
+		"url": "https://github.com/cgutiguti/mdsrs/issues"
+	},
+	"license": "MIT",
+	"keywords": ["spaced-repetition", "srs", "markdown", "postgres", "drizzle"],
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
