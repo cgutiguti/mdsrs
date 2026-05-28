@@ -1,10 +1,10 @@
 # mdsrs
 
-[![CI](https://github.com/cgutiguti/mdsrs/actions/workflows/ci.yml/badge.svg)](https://github.com/cgutiguti/mdsrs/actions/workflows/ci.yml)
-[![Pages](https://github.com/cgutiguti/mdsrs/actions/workflows/pages.yml/badge.svg)](https://github.com/cgutiguti/mdsrs/actions/workflows/pages.yml)
+[![CI](https://github.com/cgutiguti/mdsrs/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cgutiguti/mdsrs/actions/workflows/ci.yml)
+[![Pages](https://github.com/cgutiguti/mdsrs/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/cgutiguti/mdsrs/actions/workflows/pages.yml)
 [![npm](https://img.shields.io/npm/v/@mdsrs/core.svg)](https://www.npmjs.com/package/@mdsrs/core)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/cgutiguti/mdsrs?style=social)](https://github.com/cgutiguti/mdsrs/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/cgutiguti/mdsrs?label=stars)](https://github.com/cgutiguti/mdsrs/stargazers)
 
 Markdown-native spaced repetition with deterministic, content-addressed cards.
 
