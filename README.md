@@ -24,6 +24,7 @@ Next.js, Express, a command line app, a desktop app, or your own framework.
 - `@mdsrs/fs`: loads a folder of Markdown files and media assets from disk.
 - `@mdsrs/markdown`: renders card Markdown, math, images, audio, and video to safe HTML.
 - `@mdsrs/store`: shared store interface and an in-memory store.
+- `@mdsrs/file-store`: durable local JSON-file store for CLI tools and local apps.
 - `@mdsrs/postgres-drizzle`: Postgres store adapter using Drizzle.
 - `@mdsrs/cli`: command line tools for initializing, checking, and exporting collections.
 
@@ -32,6 +33,7 @@ Install only the packages you need:
 ```sh
 pnpm add @mdsrs/core
 pnpm add @mdsrs/fs @mdsrs/markdown @mdsrs/store
+pnpm add @mdsrs/file-store
 pnpm add @mdsrs/postgres-drizzle drizzle-orm
 pnpm add -D @mdsrs/cli
 ```
@@ -69,6 +71,21 @@ Export the parsed collection as JSON:
 
 ```sh
 pnpm dlx @mdsrs/cli export ./cards --pretty
+```
+
+Use the CLI with a local review database:
+
+```sh
+pnpm dlx @mdsrs/cli sync ./cards
+pnpm dlx @mdsrs/cli due ./cards --limit 10
+pnpm dlx @mdsrs/cli review ./cards <card-hash> good
+```
+
+By default, the CLI writes review state to `./cards/.mdsrs/srs.json`. You can
+choose another file:
+
+```sh
+pnpm dlx @mdsrs/cli due ./cards --db ./reviews/srs.json
 ```
 
 If a directory is not empty, `init` will refuse to write into it. Use `--force`
@@ -316,6 +333,37 @@ const snapshot = store.snapshot();
 const restored = createMemoryStore(snapshot);
 ```
 
+## Use the File Store
+
+Use `@mdsrs/file-store` when you want durable local review state without
+Postgres.
+
+```ts
+import { loadCollection } from '@mdsrs/fs';
+import { createFileStore } from '@mdsrs/file-store';
+
+const collection = await loadCollection('./cards');
+const store = await createFileStore('.mdsrs/srs.json');
+
+await store.syncCards(collection.cards);
+
+const due = await store.getDueCards(collection.cards, {
+	limit: 20
+});
+
+const item = due[0];
+if (item) {
+	await store.reviewCard(item.card.hash, 'good');
+}
+```
+
+The file store writes a small JSON document with a schema version, synced cards,
+review history, and the next review id. It writes atomically by creating a
+temporary file next to the database file and then renaming it.
+
+The file store is meant for one local process at a time. For concurrent writes
+from many users or servers, use Postgres.
+
 ## Review Queue Behavior
 
 `getDueCards` uses the same queue builder as `@mdsrs/core`.
@@ -560,6 +608,9 @@ const result = scheduleReview(performance, 'easy');
 mdsrs init <root> [--force]
 mdsrs check <root>
 mdsrs export <root> [--pretty]
+mdsrs sync <root> [--db <file>]
+mdsrs due <root> [--db <file>] [--limit <count>]
+mdsrs review <root> <card-hash> <forgot|hard|good|easy> [--db <file>]
 mdsrs help
 ```
 
@@ -568,6 +619,14 @@ mdsrs help
 `check` loads a collection and prints a summary.
 
 `export` emits the parsed collection as JSON.
+
+`sync` loads the Markdown collection and writes the card records into the local
+file store.
+
+`due` prints due cards from the local file store. Each card is one tab-separated
+line with hash, deck, and front text.
+
+`review` records one grade for one card hash.
 
 ## Example App
 
@@ -580,6 +639,12 @@ Run it from the repo:
 ```sh
 pnpm install
 pnpm --filter @mdsrs/example-sveltekit dev
+```
+
+The example also builds a static docs and browse site for GitHub Pages:
+
+```sh
+pnpm build:pages
 ```
 
 ## Development

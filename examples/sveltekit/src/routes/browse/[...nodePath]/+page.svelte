@@ -1,12 +1,14 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+
 	let { data } = $props();
 
-	const browseHref = (path: string) => `/browse/${path}`;
+	const browseHref = (path: string) => `${base}/browse/${path}`;
 </script>
 
 <main>
 	<nav class="breadcrumb" aria-label="Breadcrumb">
-		<a href="/browse">browse</a>
+		<a href={`${base}/browse`}>browse</a>
 		{#each data.breadcrumbs as crumb}
 			<span aria-hidden="true">/</span>
 			<a href={browseHref(crumb.path)}>{crumb.name}</a>

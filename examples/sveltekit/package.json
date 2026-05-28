@@ -14,7 +14,7 @@
 		"@mdsrs/fs": "workspace:*",
 		"@mdsrs/markdown": "workspace:*",
 		"@mdsrs/store": "workspace:*",
-		"@sveltejs/adapter-auto": "^7.0.0",
+		"@sveltejs/adapter-static": "^3.0.10",
 		"katex": "^0.16.47"
 	},
 	"devDependencies": {

@@ -129,6 +129,35 @@ describe('runCli', () => {
 		});
 	});
 
+	it('syncs, lists due cards, and records reviews in a local file store', async () => {
+		const directory = await mkdtemp(path.join(tmpdir(), 'mdsrs-cli-db-'));
+		const dbPath = path.join(directory, 'srs.json');
+		const sync = createIo();
+		const due = createIo();
+		const review = createIo();
+		const afterReview = createIo();
+
+		await expect(runCli(['sync', fixtureRoot, '--db', dbPath], sync.io)).resolves.toBe(0);
+		expect(sync.stdout).toContain(`db: ${dbPath}`);
+		expect(sync.stdout).toContain('cards: 4');
+
+		await expect(runCli(['due', fixtureRoot, '--db', dbPath, '--limit', '1'], due.io)).resolves.toBe(0);
+		const [, dueLine] = due.stdout.trim().split('\n');
+		const cardHash = dueLine?.split('\t')[0];
+		expect(due.stdout).toContain('due: 1');
+		expect(cardHash).toMatch(/^[0-9a-f]+$/);
+
+		await expect(runCli(['review', fixtureRoot, cardHash ?? '', 'good', '--db', dbPath], review.io)).resolves.toBe(
+			0
+		);
+		expect(review.stdout).toContain(`reviewed: ${cardHash}`);
+		expect(review.stdout).toContain('grade: good');
+		expect(review.stdout).toContain('reviews: 1');
+
+		await expect(runCli(['due', fixtureRoot, '--db', dbPath], afterReview.io)).resolves.toBe(0);
+		expect(afterReview.stdout).toContain('due: 3');
+	});
+
 	it('returns nonzero for unknown commands and load errors', async () => {
 		const unknown = createIo();
 		const missing = createIo();

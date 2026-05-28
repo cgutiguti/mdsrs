@@ -4,6 +4,18 @@ import { findDeckNode, getDirectCards, getPathSegments } from '$lib/server/brows
 import { getPerformance, syncStore } from '$lib/server/reviews';
 import type { PageServerLoad } from './$types';
 
+export const prerender = true;
+
+export const entries = async () => {
+	const collection = await getCollection();
+	return [
+		{ nodePath: '' },
+		...collection.deckTree.flatMap(function flatten(node): Array<{ nodePath: string }> {
+			return [{ nodePath: node.path }, ...node.children.flatMap(flatten)];
+		})
+	];
+};
+
 export const load: PageServerLoad = async ({ params }) => {
 	const collection = await getCollection();
 	await syncStore(collection.cards);

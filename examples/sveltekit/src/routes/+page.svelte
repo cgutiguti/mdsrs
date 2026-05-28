@@ -1,85 +1,67 @@
 <script lang="ts">
-	let { data, form } = $props();
-	let revealed = $state(false);
-	let currentHash = $state<string | null>(null);
-
-	const gradeLabels = [
-		['forgot', 'Forgot'],
-		['hard', 'Hard'],
-		['good', 'Good'],
-		['easy', 'Easy']
-	] as const;
-
-	$effect(() => {
-		const nextHash = data.currentCard?.hash ?? null;
-		if (nextHash !== currentHash) {
-			currentHash = nextHash;
-			revealed = false;
-		}
-	});
+	import { base } from '$app/paths';
 </script>
 
 <main>
-	<h1>Review</h1>
-
-	<div class="stats" aria-label="Collection summary">
-		<div class="stat">
-			<strong>{data.dueCards}</strong>
-			<span class="muted">due</span>
-		</div>
-		<div class="stat">
-			<strong>{data.totalCards}</strong>
-			<span class="muted">cards</span>
-		</div>
-		<div class="stat">
-			<strong>{data.totalSources}</strong>
-			<span class="muted">markdown files</span>
-		</div>
-		<div class="stat">
-			<strong>{data.totalAssets}</strong>
-			<span class="muted">assets</span>
-		</div>
-	</div>
-
-	{#if form?.message}
-		<p role="alert">{form.message}</p>
-	{/if}
-
-	{#if data.currentCard}
-		<p class="muted">
-			{data.currentCard.deckName} · <code>{data.currentCard.hash.slice(0, 12)}</code>
+	<section class="intro">
+		<p class="eyebrow">Markdown-native spaced repetition</p>
+		<h1>mdsrs</h1>
+		<p class="lede">
+			mdsrs is a small TypeScript toolkit for building spaced repetition systems from
+			plain Markdown files. Cards are readable by people and agents. Card identity is
+			based on deterministic hashes. Review state can live in memory, a local JSON file,
+			or Postgres.
 		</p>
+		<div class="actions">
+			<a class="button" href={`${base}/browse`}>Browse the sample cards</a>
+			<a class="button" href="https://github.com/cgutiguti/mdsrs">View on GitHub</a>
+		</div>
+	</section>
 
-		<section class="card-face" aria-label="Front">
-			<h2>Front</h2>
-			{@html data.currentCard.frontHtml}
-		</section>
+	<section>
+		<h2>Install</h2>
+		<pre><code>pnpm add @mdsrs/core @mdsrs/fs @mdsrs/markdown @mdsrs/store</code></pre>
+		<p>
+			Add <code>@mdsrs/file-store</code> if you want durable local reviews without
+			Postgres. Add <code>@mdsrs/postgres-drizzle</code> if your app already uses
+			Postgres and Drizzle.
+		</p>
+	</section>
 
-		{#if revealed}
-			<section class="card-face" aria-label="Back">
-				<h2>Back</h2>
-				{@html data.currentCard.backHtml}
-			</section>
+	<section>
+		<h2>Write cards in Markdown</h2>
+		<pre><code>---
+name = "Math"
+---
 
-			<form method="POST" action="?/review" class="actions">
-				<input type="hidden" name="cardHash" value={data.currentCard.hash} />
-				{#each gradeLabels as [grade, label]}
-					<button type="submit" name="grade" value={grade}>{label}</button>
-				{/each}
-			</form>
-		{:else}
-			<div class="actions">
-				<button type="button" onclick={() => (revealed = true)}>Reveal answer</button>
-			</div>
-		{/if}
-	{:else}
-		<section class="card-face">
-			<h2>Queue empty</h2>
-			<p class="muted">All cards in the sample collection are scheduled for the future.</p>
-		</section>
-	{/if}
+Q: What is the derivative of $x^2$?
+A: $2x$.
 
-	<form method="POST" action="?/reset" class="actions">
-		<button type="submit">Reset in-memory reviews</button>
-	</form>
+---
+
+C: Euler's identity is $e^&#123;i\pi&#125; + [1] = 0$.</code></pre>
+	</section>
+
+	<section>
+		<h2>Use a local file store</h2>
+		<pre><code>import &#123; loadCollection &#125; from '@mdsrs/fs';
+import &#123; createFileStore &#125; from '@mdsrs/file-store';
+
+const collection = await loadCollection('./cards');
+const store = await createFileStore('.mdsrs/srs.json');
+
+await store.syncCards(collection.cards);
+const queue = await store.getDueCards(collection.cards);
+await store.reviewCard(queue[0].card.hash, 'good');</code></pre>
+	</section>
+
+	<section>
+		<h2>Run the example locally</h2>
+		<pre><code>pnpm install
+pnpm --filter @mdsrs/example-sveltekit dev</code></pre>
+		<p>
+			The hosted site is static, so it shows the docs and the browse example. The review
+			screen is part of the same SvelteKit app and is meant to run locally or on a server.
+		</p>
+	</section>
 </main>

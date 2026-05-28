@@ -1,27 +1,25 @@
 {
-	"name": "@mdsrs/cli",
+	"name": "@mdsrs/file-store",
 	"version": "0.0.0",
 	"type": "module",
-	"sideEffects": false,
-	"bin": {
-		"mdsrs": "./dist/index.js"
-	},
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		}
 	},
-	"files": ["dist"],
+	"files": [
+		"dist",
+		"README.md"
+	],
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
-		"test": "vitest run",
+		"test": "vitest run src/*.test.ts",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"dependencies": {
 		"@mdsrs/core": "workspace:*",
-		"@mdsrs/file-store": "workspace:*",
-		"@mdsrs/fs": "workspace:*"
+		"@mdsrs/store": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.0",

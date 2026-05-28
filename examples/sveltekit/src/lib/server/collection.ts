@@ -1,8 +1,8 @@
-import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { loadCollection } from '@mdsrs/fs';
 import { renderCard } from '@mdsrs/markdown';
 
-const cardsRoot = fileURLToPath(new URL('../../../cards', import.meta.url));
+const cardsRoot = path.resolve('cards');
 
 export const getCollection = () => loadCollection(cardsRoot);
 

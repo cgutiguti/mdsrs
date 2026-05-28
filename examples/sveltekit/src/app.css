@@ -29,10 +29,48 @@ button:hover {
 	background: #f5f5f4;
 }
 
+.button {
+	border: 1px solid #a3a3a3;
+	background: #ffffff;
+	display: inline-block;
+	padding: 0.55rem 0.8rem;
+	text-decoration: none;
+}
+
+.button:hover {
+	background: #f5f5f4;
+}
+
 main {
 	margin: 0 auto;
 	max-width: 56rem;
 	padding: 2rem 1rem 4rem;
+}
+
+.intro {
+	border-bottom: 1px solid #d4d4d4;
+	margin-bottom: 2rem;
+	padding-bottom: 2rem;
+}
+
+.eyebrow {
+	color: #666666;
+	font-size: 0.9rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.lede {
+	font-size: 1.15rem;
+	max-width: 44rem;
+}
+
+pre {
+	background: #ffffff;
+	border: 1px solid #d4d4d4;
+	overflow-x: auto;
+	padding: 1rem;
 }
 
 .site-header {
