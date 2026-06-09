@@ -120,7 +120,7 @@
 	{/if}
 
 	{#if !initialized}
-		<section class="card-face">
+		<section class="card-face review-card">
 			<h2>Loading</h2>
 			<p class="muted">Opening the local review store.</p>
 		</section>
@@ -129,13 +129,13 @@
 			{currentCard.deckName} · <code>{currentCard.hash.slice(0, 12)}</code>
 		</p>
 
-		<section class="card-face" aria-label="Front">
+		<section class="card-face review-card" aria-label="Front">
 			<h2>Front</h2>
 			{@html currentCard.frontHtml}
 		</section>
 
 		{#if revealed}
-			<section class="card-face" aria-label="Back">
+			<section class="card-face review-card" aria-label="Back">
 				<h2>Back</h2>
 				{@html currentCard.backHtml}
 			</section>
@@ -151,7 +151,7 @@
 			</div>
 		{/if}
 	{:else}
-		<section class="card-face">
+		<section class="card-face review-card">
 			<h2>Queue empty</h2>
 			<p class="muted">All cards in the sample collection are scheduled for the future.</p>
 		</section>

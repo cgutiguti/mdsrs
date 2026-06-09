@@ -139,6 +139,10 @@ pre {
 	margin-top: 0;
 }
 
+.review-card {
+	padding: 1rem;
+}
+
 .card-header {
 	display: flex;
 	flex-wrap: wrap;
